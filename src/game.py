@@ -14,7 +14,9 @@ class Game:
         pygame.display.set_caption("Ping Pong")
         self.clock = pygame.time.Clock()
         self.hit_sound = pygame.mixer.Sound("assets/sounds/ball_hit.mp3")
+        self.superpower_sound = pygame.mixer.Sound("assets/sounds/in_fire.mp3")
         self.hit_sound.set_volume(0.5)
+        self.superpower_sound.set_volume(0.5)
         self.running = True
         self.paused = False 
         self.paddle1 = Paddle(20, 250)
@@ -23,6 +25,10 @@ class Game:
         self.font = pygame.font.Font(None, 74)
         self.score_left = 0
         self.score_right = 0
+        self.paddle1_hits = 0
+        self.paddle2_hits = 0
+        self.superpower_active = False
+        self.superpower_start_time = None
 
     def run(self):
         choice = self.show_welcome_screen()
@@ -145,12 +151,43 @@ class Game:
                 self.ball.move()
 
                 # Vérification de la collision entre la balle et les paddles
-                if self.ball.rect.colliderect(self.paddle1.rect) or self.ball.rect.colliderect(self.paddle2.rect):
-                    self.ball.vx = -self.ball.vx  # Inverser la direction de la balle
-                    self.hit_sound.play() 
+                if self.ball.rect.colliderect(self.paddle1.rect):
+                    self.ball.vx = -self.ball.vx
+                    self.hit_sound.play()
+                    self.paddle1_hits += 1
+                    self.paddle2_hits = 0
+
+                elif self.ball.rect.colliderect(self.paddle2.rect):
+                    self.ball.vx = -self.ball.vx
+                    self.hit_sound.play()
+                    self.paddle2_hits += 1
+                    self.paddle1_hits = 0 
+
+                # Activer le superpouvoir
+                if self.paddle1_hits == 2 or self.paddle2_hits == 2:
+                    self.superpower_active = True
+                    self.superpower_start_time = pygame.time.get_ticks()  # Temps en millisecondes
+                    self.ball.vx *= 2  # Double la vitesse horizontale
+                    self.ball.vy *= 2  # Double la vitesse verticale
+                    self.paddle1_hits = 0
+                    self.paddle2_hits = 0
+                    self.superpower_sound.play()
+
+                # Désactiver le superpouvoir après 10 secondes
+                if self.superpower_active:
+                    superpower_text = self.font.render("Superpower Active!", True, (255, 0, 0))
+                    self.screen.blit(superpower_text, (400, 50))
+                    current_time = pygame.time.get_ticks()
+                    if current_time - self.superpower_start_time > 10000:  # 10 000 ms = 10 secondes
+                        self.superpower_active = False
+                        self.ball.vx /= 2  # Réduit la vitesse
+                        self.ball.vy /= 2
+
+                
+                    
+
 
                 # Vérification des scores
-                
                 self.score_left, self.score_right = Fonctions.check_win(
                     self.ball, self.score_left, self.score_right, lambda: Fonctions.reset_ball(self.ball)
                 )
