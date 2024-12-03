@@ -8,9 +8,13 @@ from ball import Ball
 class Game:
     # Initialiseur
     def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
         self.screen = pygame.display.set_mode((1200, 600))
         pygame.display.set_caption("Ping Pong")
         self.clock = pygame.time.Clock()
+        self.hit_sound = pygame.mixer.Sound("assets/sounds/ball_hit.mp3")
+        self.hit_sound.set_volume(0.5)
         self.running = True
         self.paused = False 
         self.paddle1 = Paddle(20, 250)
@@ -106,7 +110,9 @@ class Game:
 
                 # Vérification de la collision avec les paddles
                 if self.ball.rect.colliderect(self.paddle1.rect) or self.ball.rect.colliderect(self.paddle2.rect):
-                    self.ball.vx = -self.ball.vx
+                    self.ball.vx = -self.ball.vx  # Inverser la direction de la balle
+                    self.hit_sound.play()  # Jouer le son
+
 
                 # Mise à jour de l'affichage
                 self.screen.fill((0, 0, 0))
@@ -140,7 +146,8 @@ class Game:
 
                 # Vérification de la collision entre la balle et les paddles
                 if self.ball.rect.colliderect(self.paddle1.rect) or self.ball.rect.colliderect(self.paddle2.rect):
-                    self.ball.vx = -self.ball.vx
+                    self.ball.vx = -self.ball.vx  # Inverser la direction de la balle
+                    self.hit_sound.play() 
 
                 # Vérification des scores
                 
@@ -158,7 +165,7 @@ class Game:
                 pygame.display.flip()  # Actualise l'écran
                 self.clock.tick(60)  # Limite à 60 FPS
             else:
-                Fonctions.show_pause_message()  # Afficher le message de pause
+                Fonctions.show_pause_message(self.screen, self.font)  # Afficher le message de pause
 
 
     def check_win(self):
@@ -171,6 +178,7 @@ class Game:
 
     def reset_ball(self):
         Fonctions.reset_ball(self.ball)
+        
 
     def draw_scores(self):
         Fonctions.draw_scores(self.screen, self.font, self.score_left, self.score_right)

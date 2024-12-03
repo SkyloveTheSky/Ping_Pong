@@ -7,10 +7,12 @@ class Fonctions:
         # Si la balle sort du côté gauche, le joueur de droite marque
         if ball.rect.left <= 0:
             score_right += 1
+            pygame.mixer.Sound("assets/sounds/ball_maty.mp3").play()
             reset_ball()
         # Si la balle sort du côté droit, le joueur de gauche marque
         elif ball.rect.right >= 1200:
             score_left += 1
+            pygame.mixer.Sound("assets/sounds/ball_maty.mp3").play()
             reset_ball()
         return score_left, score_right
 
