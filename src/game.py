@@ -164,7 +164,7 @@ class Game:
                     self.paddle1_hits = 0 
 
                 # Activer le superpouvoir
-                if self.paddle1_hits == 2 or self.paddle2_hits == 2:
+                if self.paddle1_hits == 5 or self.paddle2_hits == 5:
                     self.superpower_active = True
                     self.superpower_start_time = pygame.time.get_ticks()  # Temps en millisecondes
                     self.ball.vx *= 2  # Double la vitesse horizontale
