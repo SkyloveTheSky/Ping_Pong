@@ -98,21 +98,28 @@ class Game:
                     self.paddle2.rect.y -= 5
 
                 self.ball.move()
-                Fonctions.check_win()
+            
+                # Mise à jour des scores
+                self.score_left, self.score_right = Fonctions.check_win(
+                    self.ball, self.score_left, self.score_right, lambda: Fonctions.reset_ball(self.ball)
+                )
 
+                # Vérification de la collision avec les paddles
                 if self.ball.rect.colliderect(self.paddle1.rect) or self.ball.rect.colliderect(self.paddle2.rect):
                     self.ball.vx = -self.ball.vx
 
+                # Mise à jour de l'affichage
                 self.screen.fill((0, 0, 0))
-                Fonctions.draw_court()
+                Fonctions.draw_court(self.screen)
                 self.paddle1.draw(self.screen)
                 self.paddle2.draw(self.screen)
                 self.ball.draw(self.screen)
-                Fonctions.draw_scores()
+                Fonctions.draw_scores(self.screen, self.font, self.score_left, self.score_right)
                 pygame.display.flip()
                 self.clock.tick(60)
             else:
-                Fonctions.show_pause_message(self.screen, self.font)# Afficher le message de pause
+                Fonctions.show_pause_message(self.screen, self.font)  # Afficher le message de pause
+
 
     """**************************************Jouer local********************************************"""
     def play_local(self):
@@ -136,15 +143,18 @@ class Game:
                     self.ball.vx = -self.ball.vx
 
                 # Vérification des scores
-                Fonctions.check_win()
+                
+                self.score_left, self.score_right = Fonctions.check_win(
+                    self.ball, self.score_left, self.score_right, lambda: Fonctions.reset_ball(self.ball)
+                )
 
                 # Mise à jour de l'affichage
                 self.screen.fill((0, 0, 0))  # Efface l'écran
-                Fonctions.draw_court()  # Dessine le terrain
+                Fonctions.draw_court(self.screen)  # Dessine le terrain
                 self.paddle1.draw(self.screen)
                 self.paddle2.draw(self.screen)
                 self.ball.draw(self.screen)
-                Fonctions.draw_scores()  # Affiche les scores
+                Fonctions.draw_scores(self.screen, self.font, self.score_left, self.score_right)  # Affiche les scores
                 pygame.display.flip()  # Actualise l'écran
                 self.clock.tick(60)  # Limite à 60 FPS
             else:
